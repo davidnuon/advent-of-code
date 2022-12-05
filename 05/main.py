@@ -51,8 +51,8 @@ if __name__ == '__main__':
     for i in number_pattern.finditer(crates[-1]):
         data_positions.append(i.start())
 
-    part_1_stacks = StackCollection(len(data_positions))
-    part_2_stacks = StackCollection(len(data_positions))
+    part_1 = StackCollection(len(data_positions))
+    part_2 = StackCollection(len(data_positions))
     
     # Create identical stacks collections for part 1 and 2
     for c in crates[:-1]:
@@ -60,14 +60,14 @@ if __name__ == '__main__':
         for idx, crate_string_idx in enumerate(data_positions):
             item = crate_string[crate_string_idx]
             if item != ' ':
-                part_1_stacks.stacks[idx].insert(0, item)
-                part_2_stacks.stacks[idx].insert(0, item)
+                part_1.stacks[idx].insert(0, item)
+                part_2.stacks[idx].insert(0, item)
     
     # Execeute instructions
     for instruction in instructions:
         [amount, src, dst] = map(int, move_pattern.match(instruction).groups())
-        part_1_stacks.move_with_pop(src-1, dst-1, amount)
-        part_2_stacks.move_with_substack(src-1, dst-1, amount)
+        part_1.move_with_pop(src-1, dst-1, amount)
+        part_2.move_with_substack(src-1, dst-1, amount)
 
-    print('Part 1:', ''.join([s[-1] for s in part_1_stacks.stacks]))
-    print('Part 2:', ''.join([s[-1] for s in part_2_stacks.stacks]))
+    print('Part 1:', ''.join([s[-1] for s in part_1.stacks]))
+    print('Part 2:', ''.join([s[-1] for s in part_2.stacks]))

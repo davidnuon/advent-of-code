@@ -2,10 +2,7 @@
 
 import sys
 import enum
-
-class CommandType(enum.Enum):
-    LS = 0
-    CD = 1
+import functools
 
 class Node:
     class NodeType(enum.Enum):
@@ -16,16 +13,21 @@ class Node:
         self.name = name
         self.node_type = node_type
         self.children = {}
-        self.size = size
+        self.file_size = size
         self.parent = parent
 
-    def get_size(self):
+    @functools.cached_property
+    def computed_size(self):
         if self.node_type == Node.NodeType.FILE:
-            return self.size
+            return self.file_size
         else:
-            return sum([child.get_size() for child in self.children.values()])
+            return sum([child.computed_size for child in self.children.values()])
 
 class Command:
+    class CommandType(enum.Enum):
+        LS = 0
+        CD = 1
+
     def __init__(self, command, command_exec, command_args = []):
         self.command = command
         self.runtime = []
@@ -46,9 +48,9 @@ class Command:
 
         match command_exec:
             case 'ls':
-                command_exec = CommandType.LS
+                command_exec = Command.CommandType.LS
             case 'cd':
-                command_exec = CommandType.CD
+                command_exec = Command.CommandType.CD
             case _:
                 raise ValueError(f'Unknown command: {command_exec}')
     
@@ -73,7 +75,7 @@ if __name__ == '__main__':
 
     for c in commands:
         match c.command_exec:
-            case CommandType.LS:
+            case Command.CommandType.LS:
                 for line in c.runtime:
                     [left, right] = line.split(' ')
                     match left:
@@ -81,7 +83,7 @@ if __name__ == '__main__':
                             current_node.children[right] = Node(right, Node.NodeType.DIRECTORY, current_node)
                         case _:
                             current_node.children[right] = Node(right, Node.NodeType.FILE, current_node, size = int(left))
-            case CommandType.CD:
+            case Command.CommandType.CD:
                 next_directory = c.command_args[0]
                 match next_directory:
                     case '..':
@@ -94,32 +96,34 @@ if __name__ == '__main__':
                         else:
                             raise ValueError(f'No such directory: {next_directory}')
 
-    # Build arrays used for Part 1 and 2
+    # Calculate score for Parts 1 and 2
     nodes = [root]
-    part_1_directories = []
+    part_1_score = 0
     part_2_directories = []
-    
+
     SMALL_SIZE = 100_000    
+    ROOT_SIZE = root.computed_size
+
+    TOTAL_SPACE = 70_000_000
+    UNUSED_SPACE = 30_000_000
+    TARGET_SPACE = TOTAL_SPACE - UNUSED_SPACE
+
+    part_2_min = root
+
     while len(nodes) > 0:
         node = nodes.pop()
  
         if node.node_type == Node.NodeType.DIRECTORY:
-            if node.get_size() < SMALL_SIZE:
-                part_1_directories.append(node)
+            if node.computed_size < SMALL_SIZE:
+                part_1_score += node.computed_size
+
+            if ROOT_SIZE - node.computed_size < TARGET_SPACE:
+                if part_2_min.computed_size > node.computed_size:
+                    part_2_min = node
+
             part_2_directories.append(node)
         for child in node.children.values():
             nodes.append(child)
 
-    print('Part 1:', sum(c.get_size() for c in part_1_directories))
-    
-    TOTAL_SPACE = 70_000_000
-    UNUSED_SPACE = 30_000_000
-    TARGET_SPACE = TOTAL_SPACE - UNUSED_SPACE
-    ROOT_SIZE = root.get_size()
-    
-    for d in sorted(part_2_directories, key = lambda d: d.get_size()):
-        if d == root:
-            continue
-        if ROOT_SIZE - d.get_size() < TARGET_SPACE:
-            print('Part 2:', d.get_size())
-            break
+    print('Part 1:', part_1_score)
+    print('Part 2:', part_2_min.computed_size)

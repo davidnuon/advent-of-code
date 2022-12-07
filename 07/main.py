@@ -69,9 +69,8 @@ if __name__ == '__main__':
             commands[-1].runtime.append(line)
     
     # Build tree
-    node = Node('/', Node.NodeType.DIRECTORY, None)
-    root = node
-    current_node = node
+    root = Node('/', Node.NodeType.DIRECTORY, None)
+    current_node = root
 
     for c in commands:
         match c.command_exec:

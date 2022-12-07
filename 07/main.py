@@ -2,12 +2,6 @@
 
 import sys
 import enum
-import re
-
-class OutputType(enum.Enum):
-    Start = 0
-    Command = 1
-    Runtime = 2
 
 class CommandType(enum.Enum):
     LS = 0
@@ -48,15 +42,12 @@ class Command:
 if __name__ == '__main__':    
     commands = []
     problem_input = sys.stdin.read().strip().split('\n')
-    parse_state = OutputType.Start
 
     for line in problem_input:
         if line.startswith('$'):
-            parse_state = OutputType.Command
             command = Command.parse_command(line[2:])
             commands.append(command)
         else:
-            parse_state = OutputType.Runtime
             commands[-1].runtime.append(line)
 
     for c in commands:

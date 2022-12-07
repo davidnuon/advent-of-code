@@ -65,7 +65,7 @@ Given the commands and output in the example above, you can determine that the f
     - d.log (file, size=8033020)
     - d.ext (file, size=5626152)
     - k (file, size=7214296)
-``
+```
 
 Here, there are four directories: / (the outermost directory), a and d (which are in /), and e (which is in a). These directories also contain files of various sizes.
 

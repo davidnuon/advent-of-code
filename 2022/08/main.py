@@ -45,4 +45,4 @@ if __name__ == '__main__':
         if is_visible((x,y), (X_BOUNDERY, Y_BOUNDERY)):
             part_1_score += 1
    
-    print(part_1_score)
+    print('Part 1:', part_1_score)

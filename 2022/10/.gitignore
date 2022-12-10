@@ -1,0 +1,6 @@
+Main
+Main.hl
+Main.o
+*.pyc
+.pycache
+Main.hi

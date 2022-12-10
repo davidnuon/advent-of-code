@@ -23,11 +23,8 @@ if __name__ == '__main__':
                 cycle += 2
                 register += value
 
-    sample_idx = [20, 60, 100, 140, 180, 220]
-    signal_sum = 0
-    for idx in sample_idx:
-        signal_strength = idx * states[idx]
-        signal_sum += signal_strength
+    sample_idx = range(20, 240, 40)
+    signal_sum = sum(map(lambda idx: idx * states[idx], sample_idx))
     
     print('Part 1:', signal_sum)
     WIDTH = 40 

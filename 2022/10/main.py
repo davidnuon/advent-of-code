@@ -31,17 +31,33 @@ if __name__ == '__main__':
 
                 cycle += 2
                 register += value
-        
-    print(register, cycle)
-    print()
-    for k,v in states.states.items():
-        print(f'Cycle {k}: {v[1]}')
 
     sample_idx = [20, 60, 100, 140, 180, 220]
     signal_sum = 0
     for idx in sample_idx:
         signal_strength = idx * states.states[idx][1]
-        print(idx, states.states[idx][1], signal_strength)
         signal_sum += signal_strength
+    
+    print('Part 1:', signal_sum)
 
-    print('Part 1:', signal_sum)        
+    memory_states = [s[1] for s in states.states.values()]
+    pixels = [False] * (40 * 6 + 1)
+
+    for _c, register_x in enumerate(memory_states):
+        cycle = _c + 1
+        beam_positon = _c % 40
+
+        if beam_positon in [register_x, register_x + 1, register_x - 1]:
+            pixels[cycle] = True
+    
+    print('Part 2:')
+    for idx, pixel in enumerate(pixels):
+        if idx == 0:
+            continue
+        if pixel:
+            print('⬛', end='')
+        else:
+            print('⬜', end='')
+
+        if idx % 40 == 0:
+            print()

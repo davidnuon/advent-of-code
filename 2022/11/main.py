@@ -12,18 +12,20 @@ def parse_int(token):
     return int("".join(digits))
 
 class MonkeyBlock:
-    def __init__(self, monkey_number):
+    def __init__(self, monkey_number, number_handler):
         self.monkey_number = monkey_number
         self.startng_items = []
         self.operation = ""
         self.test_items = {}
         self.test_predicate = []
+        self.test_divisor = 1
         self.inspection_count = 0
+        self.number_handler = number_handler
 
     def throw_item(self, worry, worry_check = False):
         [_, opcode, right] = self.operation
         op = operator.add if opcode == '+' else operator.mul
-        item = type(worry)(worry) * worry if right == 'old' else op(worry, int(right))
+        item = self.number_handler(worry) * worry if right == 'old' else op(worry, int(right))
         if worry_check:
             item = item // 3
         divisor = int(self.test_predicate[-1])
@@ -86,7 +88,7 @@ def parse_monkeys(problem_input, number_handler = int):
             case 'Monkey':
                 [_, number_token] = tokens
                 monkey_number = int(number_token.replace(':', ''))
-                monkies.append(MonkeyBlock(monkey_number))
+                monkies.append(MonkeyBlock(monkey_number, number_handler))
             case 'Starting':
                 current_monkey.startng_items = [number_handler(t) for t in tokens[2:]]
             case 'Operation:':
